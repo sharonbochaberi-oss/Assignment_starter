@@ -4,7 +4,6 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# CLASS
 class Student:
     def __init__(self, id, name, course=None):
         self.id = id
@@ -18,18 +17,29 @@ class Student:
             "course": self.course
         }
 
-# data holder
 students = [
     Student(1, "Akida Mwaura", "Software Development"),
     Student(2, "Mike John", "Cyber Security")
 ]
 
 
-# GET all students
+@app.route('/')
+def home():
+    return jsonify({
+        "message": "Student API is running",
+        "endpoints": [
+            "GET /students",
+            "GET /students/<id>",
+            "POST /students",
+            "PUT /students/<id>",
+            "DELETE /students/<id>"
+        ]
+    })
+
+
 @app.route('/students', methods=['GET'])
 def get_students():
     return jsonify([s.to_dict() for s in students])
-
 
 @app.route('/students/<int:id>', methods=['GET'])
 def get_student(id):
@@ -37,7 +47,6 @@ def get_student(id):
     if student:
         return jsonify(student.to_dict())
     return jsonify({"error": "Student not found"}), 404
-
 
 @app.route('/students', methods=['POST'])
 def create_student():
@@ -48,7 +57,6 @@ def create_student():
 
     students.append(new_student)
     return jsonify(new_student.to_dict()), 201
-
 
 @app.route('/students/<int:id>', methods=['PUT'])
 def update_student(id):
@@ -63,14 +71,12 @@ def update_student(id):
 
     return jsonify(student.to_dict())
 
-
 @app.route('/students/<int:id>', methods=['DELETE'])
 def delete_student(id):
     global students
     students = [s for s in students if s.id != id]
 
     return jsonify({"message": "Deleted"})
-
 
 if __name__ == '__main__':
     app.run(debug=True)
